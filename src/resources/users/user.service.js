@@ -1,13 +1,13 @@
 const User = require('./user.model');
 const usersRepo = require('./user.memory.repository');
-// const taskService = require('../tasks/task.service');
+const tasksService = require('../tasks/task.service');
 
 const getAll = () => usersRepo.getAll();
 const getById = (id) => usersRepo.getById(id);
 const save = (props) => usersRepo.save(new User(props));
 const remove = async (id) => {
     await usersRepo.remove(id);
-    // await taskService.removeUserBinding(id);
+    await tasksService.removeUserBinding(id);
 };
 const update = (id, props) => usersRepo.update(id, props);
 

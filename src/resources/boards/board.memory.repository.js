@@ -31,6 +31,6 @@ const update = async (id, props) => {
     }
   
     return getById(id);
-  };
+};
 
 module.exports = { getAll, getById, save, remove, update };

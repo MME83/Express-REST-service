@@ -36,6 +36,6 @@ router.route('/:id').put(async (req, res) => {
       props
     );
     res.status(200).json(board);
-  });
+});
 
 module.exports = router;
