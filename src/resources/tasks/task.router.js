@@ -2,46 +2,58 @@ const router = require('express').Router();
 
 const Task = require('./task.model');
 const tasksService = require('./task.service');
+const routerErrorHandler = require('../../utils/routerErrorHandler');
 
-router.route('/:boardId/tasks').get(async (req, res) => {
-    const { boardId } = req.params;
-    const tasks = await tasksService.getAll(boardId);
+router.route('/:boardId/tasks').get(
+    routerErrorHandler(async (req, res) => {
+      const { boardId } = req.params;
+      const tasks = await tasksService.getAll(boardId);
     
-    res.status(200).json(tasks.map(Task.toResponse));
-});
+      res.status(200).json(tasks.map(Task.toResponse));
+   })
+);
 
-router.route('/:boardId/tasks/:id').get(async (req, res) => {
-    const { boardId, id } = req.params;
-    const task = await tasksService.getById(boardId, id);
+router.route('/:boardId/tasks').post(
+    routerErrorHandler(async (req, res) => {
+      const { boardId } = req.params;
+      const { body } = req;
+      const task = await tasksService.create(boardId, body);
 
-    res.status(200).json(Task.toResponse(task));
-});
+      res.status(201).json(Task.toResponse(task));
+    })
+);
 
-router.route('/:boardId/tasks').post(async (req, res) => {
-    const { boardId } = req.params;
-    const { body } = req;
-    const task = await tasksService.save(boardId, body);
+router.route('/:boardId/tasks/:id').get(
+    routerErrorHandler(async (req, res) => {
+      const { boardId, id } = req.params;
+      const task = await tasksService.getById(boardId, id);
 
-    res.status(201).json(Task.toResponse(task));
-});
+      res.status(200).json(Task.toResponse(task));
+    })
+);
 
-router.route('/:boardId/tasks/:id').delete(async (req, res) => {
-    const { boardId, id } = req.params;
+router.route('/:boardId/tasks/:id').put(
+    routerErrorHandler(async (req, res) => {
+      const { boardId, id } = req.params;
+      const { body } = req;
+      const updatedTask = await tasksService.update(
+        boardId,
+        id,
+        body,
+      );
 
-    await tasksService.remove(boardId, id);
-    res.status(204).send('Task has been removed!');
-});
+      res.status(200).json(Task.toResponse(updatedTask));
+    })
+);
 
-router.route('/:boardId/tasks/:id').put(async (req, res) => {
-    const { boardId, id } = req.params;
-    const { body } = req;
-    const updatedTask = await tasksService.update(
-      boardId,
-      id,
-      body,
-    );
+router.route('/:boardId/tasks/:id').delete(
+    routerErrorHandler(async (req, res) => {
+      const { boardId, id } = req.params;
 
-    res.status(200).json(Task.toResponse(updatedTask));
-});
+      await tasksService.remove(boardId, id);
+
+      res.status(204).send('Task has been removed!');
+    })
+);
 
 module.exports = router;

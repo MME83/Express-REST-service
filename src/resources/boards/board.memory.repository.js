@@ -1,36 +1,39 @@
-const BOARDS = [];
+const memoryDb = require('../../memoryDB/memoryDb');
 
-const getAll = async () => BOARDS;
+const tableMemoryDb = 'Boards';
+const { NotFound } = require('../../utils/notfound');
+const { BadRequest } = require('../../utils/badrequest');
+
+const getAll = async () => memoryDb.getAllEntities(tableMemoryDb);
 
 const getById = async (id) => {
-    const entities = await BOARDS.filter((item) => id === item.id);
-    return entities[0];
+    const board = await memoryDb.getEntityById(tableMemoryDb, id);
+
+    if (!board) {
+      throw new NotFound(`Board with id:${id} not found`);
+    }
+
+    return board;
 }
 
-const save = async (board) => { 
-    BOARDS.push(board);
-    return getById(board.id);
+const create = async (board) => memoryDb.createEntity(tableMemoryDb, board);
+
+const update = async (id, props) => {
+  const board = await memoryDb.updateEntity(tableMemoryDb, id, props);
+
+  if (!board) {
+    throw new BadRequest(`Board with id:${id} not exist`);
+  }
+
+  return board;
 };
 
 const remove = async (id) => {
-    const removeIndex = await BOARDS.map(item => item.id).indexOf(id);
+  const board = await memoryDb.deleteEntity(tableMemoryDb, id);
 
-    return BOARDS.splice(removeIndex, 1);
+  if (!board) {
+    throw new NotFound(`Board with id:${id} not found`);
+  }
 };
 
-const update = async (id, props) => {
-    const entity = await getById(id);
-    
-    if (entity) {
-      const entityIndex = BOARDS.indexOf(entity);
-      
-      BOARDS[entityIndex] = new entity.constructor({
-        ...entity,
-        ...props,
-      });
-    }
-  
-    return getById(id);
-};
-
-module.exports = { getAll, getById, save, remove, update };
+module.exports = { getAll, getById, create, update, remove };

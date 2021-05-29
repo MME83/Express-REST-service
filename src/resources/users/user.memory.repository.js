@@ -1,35 +1,39 @@
-const USERS = [];
+const memoryDb = require('../../memoryDB/memoryDb');
 
-const getAll = async () => USERS;
+const tableMemoryDb = 'Users';
+const { NotFound } = require('../../utils/notfound');
+const { BadRequest } = require('../../utils/badrequest');
+
+const getAll = async () => memoryDb.getAllEntities(tableMemoryDb);
+
 const getById = async (id) => {
-  const entities = USERS.filter((item) => id === item.id); // USERS.find(user => user.id === id);
-  return entities[0];
-}
-const save = async (entity) => { 
-  USERS.push(entity);
-  return getById(entity.id);
-};
-const remove = async (id) => {
-  const removeIndex = await USERS.map(item => item.id).indexOf(id);
-
-  return USERS.splice(removeIndex, 1);
-  /* return (USERS.splice(USERS.map(user => {
-    return user.id;
-  }).indexOf(id), 1)); */
-};
-const update = async (id, props) => {
-  const entity = await getById(id);
+  const user = await memoryDb.getEntityById(tableMemoryDb, id);
   
-  if (entity) {
-    const entityIndex = USERS.indexOf(entity);
-    
-    USERS[entityIndex] = new entity.constructor({
-      ...entity,
-      ...props,
-    });
+  if (!user) {
+    throw new NotFound(`User with id:${id} not found`);
   }
 
-  return getById(id);
+  return user;
+}
+
+const create = async (user) => memoryDb.createEntity(tableMemoryDb, user);
+
+const update = async (id, props) => {
+  const user = await memoryDb.updateEntity(tableMemoryDb, id, props);
+  
+  if (!user) {
+    throw new BadRequest(`User with id:${id} not exist`);
+  }
+
+  return user;
 };
 
-module.exports = { getAll, getById, save, remove, update };
+const remove = async (id) => {
+  const user = await memoryDb.deleteEntity(tableMemoryDb, id);
+
+  if (!user) {
+    throw new NotFound(`User with id:${id} not found`);
+  }
+};
+
+module.exports = { getAll, getById, create, update, remove };

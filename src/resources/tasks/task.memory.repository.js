@@ -1,90 +1,68 @@
-const TASK = [];
+const memoryDb = require('../../memoryDB/memoryDb');
+
 const Task = require('./task.model');
+const { NotFound } = require('../../utils/notfound');
+const { BadRequest } = require('../../utils/badrequest');
 
-const getEntitiesByProps = async (props) => {
-    const keys = Object.keys(props);
-  
-    return TASK.filter((entity) =>
-      keys.every((key) => props[key] === entity[key])
-    );
-};
+const tableMemoryDb = 'Tasks';
 
-const getEntityByIdAndProps = async (id, props) => {
-    const keys = Object.keys(props);
-    const entities = TASK.filter((entity) => {
-      const propCondition = keys.every((key) => props[key] === entity[key]);
-      const idCondition = entity.id === id;
-  
-      return propCondition && idCondition;
-    });   
-  
-    return entities[0];
-};
-
-const getAll = async (boardId) => {
-
-    getEntitiesByProps(TASK, { boardId });
-};
+const getAll = async (boardId) => 
+  memoryDb.getAllEntitiesByProps(tableMemoryDb, { boardId });
 
 const getById = async (boardId, id) => {
-    const task = await getEntityByIdAndProps(TASK, id, { boardId });
-   
+    const task = await memoryDb.getEntityByIdAndProps(tableMemoryDb, id, { boardId });
+
+    if (!task) {
+      throw new NotFound(`Task with id:${id} and boardId:${boardId} not found`);
+    }
+    
     return task;
 }
 
-const save = async (task) => { 
-    TASK.push(task);
-    return getById(task.id);
+const create = async (task) => memoryDb.createEntity(tableMemoryDb, task);
+
+const update = async (boardId, id, props) => {
+  const task = await memoryDb.updateEntity(tableMemoryDb, id, props);
+
+  if (!task) {
+    throw new BadRequest(`Task with id:${id} and boardId:${boardId} not exist`);
+  }
+
+  return task;
 };
 
 const remove = async (boardId, id) => {
-    const removeIndex = await TASK.map(item => item.id).indexOf(id);
+  const task = await memoryDb.deleteEntity(tableMemoryDb, id);
 
-    return TASK.splice(removeIndex, 1);
-};
-
-
-const update = async (boardId, id, props) => {
-    const entity = await getById(id);
-    
-    if (entity) {
-      const entityIndex = TASK.indexOf(entity);
-      
-      TASK[entityIndex] = new entity.constructor({
-        ...entity,
-        ...props,
-      });
-    }
-  
-    return getById(id);
+  if (!task) {
+    throw new NotFound(`Task with id:${id} and boardId:${boardId} not found`);
+  }
 };
 
 const removeAllOnBoard = async (boardId) => {
-    const removedTasks = await getEntityByIdAndProps(TASK, { boardId });
-  
-    removedTasks.forEach(async (task) => {
-      await remove(boardId, task.id);
-    });
+  const tasks = await memoryDb.getAllEntitiesByProps(tableMemoryDb, { boardId });
+
+  tasks.forEach(async (task) => {
+    await remove(boardId, task.id);
+  });
 };
 
 const removeUserBinding = async (userId) => {
-    const tasks = await TASK.filter((entity) => entity);
-  
-    tasks.forEach(async (task) => {
-      if (task.userId === userId) {
-        await update(task.boardId, task.id, new Task({ ...task, userId: null }));
-      }
-    });
-  };
+  const tasks = await memoryDb.getAllEntities(tableMemoryDb);
 
-
+  tasks.forEach(async (task) => {
+    if (task.userId === userId) {
+      await update(task.boardId, task.id, new Task({ ...task, userId: null }));
+    }
+  });
+};
 
 module.exports = {
     getAll,
     getById,
-    save,
-    remove,
+    create,
     update,
+    remove,
     removeAllOnBoard,
     removeUserBinding,
   };
