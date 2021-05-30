@@ -8,7 +8,7 @@ const { BadRequest } = require('../utils/badrequest');
  * @param {Object} req Express request
  * @param {Object} res Express response
  * @param {Function} next Express next() method
- * @returns {Number, Object} error status code and error message
+ * @returns {JSON} error status code and error message
  */
 const handleErrors = (err, req, res, next) => {
   if (err instanceof GeneralError) {
