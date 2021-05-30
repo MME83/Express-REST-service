@@ -2,16 +2,18 @@
  * Board service
  * @module board/service
  */
-const boardsRepo = require('./board.memory.repository');
-const tasksService = require('../tasks/task.service');
-const Board = require('./board.model');
+import boardsRepo from './board.memory.repository';
+import tasksService from '../tasks/task.service';
+
+import Board from './board.model';
+import IBoardProps from './board.types';
 
 /**
  * Calls repository to retrieve all boards
  * @returns {Promise<Array<Board>>} promise resolving to array of boards
  * {@link module:board/repository}
  */
-const getAll = () => boardsRepo.getAll();
+const getAll = async (): Promise<Board[]> => boardsRepo.getAll();
 
 /**
  * Calls board/repository to retrieve one board by id
@@ -20,7 +22,7 @@ const getAll = () => boardsRepo.getAll();
  * @returns {Promise<Board>} promise resolving to board
  * {@link module:board/repository}
  */
-const getById = (id) => boardsRepo.getById(id);
+const getById = async (id: string): Promise<Board> => boardsRepo.getById(id);
 
 /**
  * Forwards a newly-created Board instance to repository
@@ -28,7 +30,7 @@ const getById = (id) => boardsRepo.getById(id);
  * @returns {Promise<Board>} promise resolving to board
  * {@link module:board/repository}
  */
-const create = (props) => boardsRepo.create(new Board(props));
+const create = async (props: IBoardProps): Promise<Board> => boardsRepo.create(new Board(props));
 
 /**
  * Forwards new props that should be applied to board with id to repository
@@ -38,7 +40,7 @@ const create = (props) => boardsRepo.create(new Board(props));
  * @returns {Promise<Board>} promise resolving to Board
  * {@link module:board/repository}
  */
-const update = (id, props) => boardsRepo.update(id, props);
+const update = async (id: string, props: IBoardProps): Promise<Board> => boardsRepo.update(id, props);
 
 /**
  * Calls repository to remove board and task service to remove all tasks associated with removed board
@@ -48,9 +50,15 @@ const update = (id, props) => boardsRepo.update(id, props);
  * {@link module:board/repository}
  * {@link module:task/service}
  */
-const remove = async (id) => {
+const remove = async (id: string): Promise<void> => {
     await boardsRepo.remove(id);
     await tasksService.removeAllOnBoard(id);
 };
 
-module.exports = { getAll, getById, create, update, remove };
+export default {
+    getAll,
+    getById,
+    create,
+    update,
+    remove,
+};

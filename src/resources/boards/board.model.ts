@@ -3,9 +3,9 @@
  * @module board/model
  */
 
-const uuid = require('uuid');
-
-const Column = require('./board.column.model');
+import * as uuid from 'uuid';
+import Column from './board.column.model';
+import IBoardProps from './board.types';
 
 /**
  * Board instance type
@@ -17,6 +17,12 @@ const Column = require('./board.column.model');
 
 /** Class Board representing a board */
 class Board {
+  id: string;
+
+  title: string;
+
+  columns: Column[];
+
   /**
    * Creates a Board instance
    * @type {Board}
@@ -25,15 +31,15 @@ class Board {
    * @param {String} [props.title = 'Board Title'] board title
    * @param {Array<Column>} [props.columns = [Column]] board columns
    */
-  constructor({
+   constructor({
     id = uuid.v4(),
     title = 'Board Title',
     columns = [new Column()],
-  } = {}) {
+  }: IBoardProps = {}) {
     this.id = id;
     this.title = title;
     this.columns = columns;
   }
 }
 
-module.exports = Board;
+export default Board;

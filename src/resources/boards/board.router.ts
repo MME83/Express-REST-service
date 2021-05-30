@@ -1,9 +1,12 @@
-const router = require('express').Router();
-const boardsService = require('./board.service');
-const routerErrorHandler = require('../../utils/routerErrorHandler');
+import express from 'express';
+import asyncHandler from 'express-async-handler';
+
+import boardsService from './board.service';
+
+const router = express.Router();
 
 router.route('/').get(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const boards = await boardsService.getAll();
 
       res.status(200).json(boards);
@@ -11,7 +14,7 @@ router.route('/').get(
 );
 
 router.route('/').post(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const props = req.body; 
       const board = await boardsService.create(props);
     
@@ -20,7 +23,7 @@ router.route('/').post(
 );
 
 router.route('/:id').get(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const { id } = req.params;
       const board = await boardsService.getById(id);
 
@@ -29,7 +32,7 @@ router.route('/:id').get(
 );
 
 router.route('/:id').put(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const { id } = req.params;
       const props = req.body;
       const board = await boardsService.update(
@@ -42,7 +45,7 @@ router.route('/:id').put(
 );
 
 router.route('/:id').delete(
-    routerErrorHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
       const { id } = req.params;
      
       await boardsService.remove(req.params.id);
@@ -51,4 +54,4 @@ router.route('/:id').delete(
     })
 );
 
-module.exports = router;
+export default router;

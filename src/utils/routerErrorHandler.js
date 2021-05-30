@@ -22,4 +22,4 @@ const routerErrorHandler = (funcerror) =>
     });
   };
   
-module.exports = routerErrorHandler;
+export default routerErrorHandler;

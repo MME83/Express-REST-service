@@ -1,9 +1,10 @@
+import * as uuid from 'uuid';
+//
+import IUserProps from './user.types';
 /**
  * User model
  * @module user/model
  */
-
-const uuid = require('uuid');
 
 /**
  * User instance type
@@ -16,6 +17,14 @@ const uuid = require('uuid');
 
 /** Class User representing a user */
 class User {
+  id: string;
+
+  name: string;
+  
+  login: string;
+
+  password: string;
+
   /**
    * Creates a User instance
    * @type {User}
@@ -25,12 +34,12 @@ class User {
    * @param {String} [props.login = 'user'] user login
    * @param {String} [props.password = 'P@55w0rd'] user password
    */
-  constructor({
+   constructor({
     id = uuid.v4(),
     name = 'USER',
     login = 'user',
-    password = 'P@55w0rd'
-  } = {}) {
+    password = 'P@55w0rd',
+  }: IUserProps = {}) {
     this.id = id;
     this.name = name;
     this.login = login;
@@ -42,11 +51,17 @@ class User {
    * @param {User} userInstance user instance
    * @returns {Object} object without password field
    */
-  static toResponse(user) {
+  static toResponse(
+    user: User
+  ): {
+    id: string;
+    name: string;
+    login: string;
+  } {
     const { id, name, login } = user;
+
     return { id, name, login };
   }
-
 }
 
-module.exports = User;
+export default User;

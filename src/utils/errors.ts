@@ -7,7 +7,7 @@ class GeneralError extends Error {
    * create error message
    * @param {string} message error message
    */
-    constructor(message) {
+    constructor(message: string) {
       super();
       /** @private */
       this.message = message;
@@ -17,7 +17,7 @@ class GeneralError extends Error {
      * Get the error code status 500
      * @returns {number} error code status
      */
-    getCode() {
+    getCode(): number {
       if (this instanceof GeneralError) {
           return 500;
       }
@@ -25,4 +25,4 @@ class GeneralError extends Error {
     }
 }
   
-module.exports = { GeneralError };
+export default GeneralError;

@@ -1,20 +1,23 @@
-const router = require('express').Router();
+import express from 'express';
+import asyncHandler from 'express-async-handler';
 
-const Task = require('./task.model');
-const tasksService = require('./task.service');
-const routerErrorHandler = require('../../utils/routerErrorHandler');
+import Task from './task.model';
+import tasksService from './task.service';
+
+
+const router = express.Router();
 
 router.route('/:boardId/tasks').get(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const { boardId } = req.params;
       const tasks = await tasksService.getAll(boardId);
     
       res.status(200).json(tasks.map(Task.toResponse));
-   })
+    })
 );
 
 router.route('/:boardId/tasks').post(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const { boardId } = req.params;
       const { body } = req;
       const task = await tasksService.create(boardId, body);
@@ -24,7 +27,7 @@ router.route('/:boardId/tasks').post(
 );
 
 router.route('/:boardId/tasks/:id').get(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const { boardId, id } = req.params;
       const task = await tasksService.getById(boardId, id);
 
@@ -33,7 +36,7 @@ router.route('/:boardId/tasks/:id').get(
 );
 
 router.route('/:boardId/tasks/:id').put(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const { boardId, id } = req.params;
       const { body } = req;
       const updatedTask = await tasksService.update(
@@ -47,7 +50,7 @@ router.route('/:boardId/tasks/:id').put(
 );
 
 router.route('/:boardId/tasks/:id').delete(
-    routerErrorHandler(async (req, res) => {
+    asyncHandler(async (req, res) => {
       const { boardId, id } = req.params;
 
       await tasksService.remove(boardId, id);

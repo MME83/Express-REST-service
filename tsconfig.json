@@ -28,5 +28,5 @@
     ],
     "include": [
         "./src/**/*.ts"
-    ],
+, "src/utils/routerErrorHandler.js"    ],
 }

@@ -1,11 +1,12 @@
-const router = require('express').Router();
-const User = require('./user.model');
+import express from 'express';
+import asyncHandler from 'express-async-handler';
+import User from './user.model';
+import usersService from './user.service';
 
-const usersService = require('./user.service');
-const routerErrorHandler = require('../../utils/routerErrorHandler');
+const router = express.Router();
 
 router.route('/').get(
-  routerErrorHandler(async (req, res) => {
+  asyncHandler(async (_req, res) => {
     const users = await usersService.getAll();
     // map user fields to exclude secret fields like "password"
   
@@ -14,7 +15,7 @@ router.route('/').get(
 );
 
 router.route('/').post(
-  routerErrorHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { name, login, password } = req.body;
 
     const user = await usersService.create({ name, login, password });
@@ -23,7 +24,7 @@ router.route('/').post(
 );
 
 router.route('/:id').get(
-  routerErrorHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     const user = await usersService.getById(id);
@@ -33,21 +34,18 @@ router.route('/:id').get(
 );
 
 router.route('/:id').put(
-  routerErrorHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { name, login, password } = req.body;
 
-    const user = await usersService.update(
-      id,
-      { name, login, password }
-    );
+    const user = await usersService.update(id, { name, login, password });
     
     res.status(200).json(User.toResponse(user));
   })
 );
 
 router.route('/:id').delete(
-  routerErrorHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     await usersService.remove(id);
@@ -56,4 +54,4 @@ router.route('/:id').delete(
   })
 );
 
-module.exports = router;
+export default router;

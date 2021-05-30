@@ -2,8 +2,9 @@
  * Task service
  * @module task/service
  */
-const Task = require('./task.model');
-const tasksRepo = require('./task.memory.repository');
+import tasksRepo from './task.memory.repository';
+import Task from './task.model';
+import ITaskProps from './task.types';
 
 /**
  * Forwards boardId to repository and retrieves all tasks on that board
@@ -11,7 +12,7 @@ const tasksRepo = require('./task.memory.repository');
  * @returns {Promise<Array<Task>>} promise resolving to array of tasks on board
  * {@link module:task/repository}
  */
-const getAll = (boardId) => tasksRepo.getAll(boardId);
+const getAll = async (boardId: string): Promise<Task[]> => tasksRepo.getAll(boardId);
 
 /**
  * Forwards boardId and task id to repository and retrieves task with id on board
@@ -21,7 +22,7 @@ const getAll = (boardId) => tasksRepo.getAll(boardId);
  * @returns {Promise<Task>} promise resolving to task on board
  * {@link module:task/repository}
  */
-const getById = (boardId, id) => tasksRepo.getById(boardId, id);
+const getById = async (boardId: string, id: string): Promise<Task> => tasksRepo.getById(boardId, id);
 
 /**
  * Creates a new Task instance from props and forwards to repository to be added to db
@@ -30,7 +31,7 @@ const getById = (boardId, id) => tasksRepo.getById(boardId, id);
  * @returns {Promise<Task>} promise resolving to task on board
  * {@link module:task/repository}
  */
-const create = (boardId, task) => tasksRepo.create(new Task({...task, boardId}));
+const create = async (boardId: string, task: ITaskProps): Promise<Task> => tasksRepo.create(new Task({...task, boardId}));
 
 /**
  * Forwards new props to be applied to task on board
@@ -41,7 +42,11 @@ const create = (boardId, task) => tasksRepo.create(new Task({...task, boardId}))
  * @returns {Task}
  * {@link module:task/repository}
  */
-const update = (boardId, id, task) => tasksRepo.update(boardId, id, task);
+const update = async (
+    boardId: string,
+    id: string,
+    task: ITaskProps
+  ): Promise<Task> => tasksRepo.update(boardId, id, task);
 
 /**
  * Calls repository to remove task on board
@@ -51,7 +56,7 @@ const update = (boardId, id, task) => tasksRepo.update(boardId, id, task);
  * @returns {void}
  * {@link module:task/repository}
  */
-const remove = (boardId, id) => tasksRepo.remove(boardId, id);
+const remove = async (boardId: string, id: string): Promise<void> => tasksRepo.remove(boardId, id);
 
 /**
  * Forwards boardId to repository to find and remove all tasks on board
@@ -59,7 +64,7 @@ const remove = (boardId, id) => tasksRepo.remove(boardId, id);
  * @returns {void}
  * {@link module:task/repository}
  */
-const removeAllOnBoard = (boardId) => tasksRepo.removeAllOnBoard(boardId);
+const removeAllOnBoard = async (boardId: string): Promise<void> => tasksRepo.removeAllOnBoard(boardId);
 
 /**
  * Forwards userId to repository to unbind user from all tasks
@@ -67,9 +72,9 @@ const removeAllOnBoard = (boardId) => tasksRepo.removeAllOnBoard(boardId);
  * @return {void}
  * {@link module:task/repository}
  */
-const removeUserBinding = (userId) => tasksRepo.removeUserBinding(userId);
+const removeUserBinding = (userId: string): Promise<void> => tasksRepo.removeUserBinding(userId);
 
-module.exports = {
+export default {
     getAll,
     getById,
     create,

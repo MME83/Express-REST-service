@@ -2,16 +2,17 @@
  * User service
  * @module user/service
  */
-const User = require('./user.model');
-const usersRepo = require('./user.memory.repository');
-const taskService = require('../tasks/task.service');
+import usersRepo from './user.memory.repository';
+import User from './user.model';
+import IUserProps from './user.types';
+import taskService from '../tasks/task.service';
 
 /**
  * Calls repository and retrieves all users
  * @returns {Promise<Array<User>>} promise resolving to array of users
  * {@link module:user/repository}
  */
-const getAll = () => usersRepo.getAll();
+const getAll = async (): Promise<User[]> => usersRepo.getAll();
 
 /**
  * Calls repository and retrieves one user by id
@@ -20,7 +21,7 @@ const getAll = () => usersRepo.getAll();
  * @returns {Promise<User>} promise resolving to user
  * {@link module:user/repository}
  */
-const getById = (id) => usersRepo.getById(id);
+const getById = async (id: string): Promise<User> => usersRepo.getById(id);
 
 /**
  * Creates a user from props and sends to repository to be added to database
@@ -28,7 +29,8 @@ const getById = (id) => usersRepo.getById(id);
  * @returns {Promise<User>} promise resolving to user
  * {@link module:user/repository}
  */
-const create = (props) => usersRepo.create(new User(props));
+const create = async (props: IUserProps): Promise<User> =>
+  usersRepo.create(props);
 
 /**
  * Forwards new user props to repository
@@ -38,7 +40,8 @@ const create = (props) => usersRepo.create(new User(props));
  * @returns {Promise<User>} promise resolving to user
  * {@link module:user/repository}
  */
-const update = (id, props) => usersRepo.update(id, props);
+const update = async (id: string, props: IUserProps): Promise<User> =>
+  usersRepo.update(id, props);
 
 /**
  * Forwards id of a user to be removed to repository, cleans up tasks
@@ -48,9 +51,9 @@ const update = (id, props) => usersRepo.update(id, props);
  * {@link module:user/repository}
  * {@link module:task/service}
  */
-const remove = async (id) => {
+ const remove = async (id: string): Promise<void> => {
     await usersRepo.remove(id);
     await taskService.removeUserBinding(id);
 };
 
-module.exports = { getAll, getById, create, update, remove};
+export default { getAll, getById, create, update, remove};

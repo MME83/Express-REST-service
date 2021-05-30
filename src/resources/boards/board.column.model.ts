@@ -4,8 +4,8 @@
  * @ignore
  */
 
-const uuid = require('uuid');
-
+import * as uuid from 'uuid';
+import IColumnProps from './board.column.types';
 /**
  * Column instance type
  * @typedef {Object} Column
@@ -16,6 +16,12 @@ const uuid = require('uuid');
 
 /** Class Column representing a column */
 class Column {
+  id: string;
+
+  title: string;
+
+  order: number;
+
   /**
    * Creates a column instance
    * @type {Column}
@@ -24,15 +30,15 @@ class Column {
    * @param {String} [props.title="Column Title"] column title
    * @param {Number} [props.order=0] - order of the Column on the Board
    */
-  constructor({
-    id = uuid.v4(),
-    title = 'Column Title',
-    order = 0,
-  } = {}) {
+  constructor({ 
+    id = uuid.v4(), 
+    title = 'Column Title', 
+    order = 0 
+  }: IColumnProps = {}) {
     this.id = id;
     this.title = title;
     this.order = order;
   }
 }
 
-module.exports = Column;
+export default Column;

@@ -1,3 +1,10 @@
+import IUserProps from '../resources/users/user.types';
+import ITaskProps from '../resources/tasks/task.types';
+import IBoardProps from '../resources/boards/board.types';
+import Board from '../resources/boards/board.model';
+import Task from '../resources/tasks/task.model';
+import User from '../resources/users/user.model';
+
 /**
  * An in-memory database object
  * @type {Object}
@@ -113,7 +120,7 @@ const deleteEntity = async (tableMemoryDb, id) => {
     return !!entity;
 };
 
-module.exports = { 
+export default { 
     getAllEntities,
     getAllEntitiesByProps,
     getEntityById,

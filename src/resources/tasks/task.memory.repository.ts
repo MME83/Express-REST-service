@@ -2,11 +2,12 @@
  * Task repository
  * @module task/repository
  */
-const memoryDb = require('../../memoryDB/memoryDb');
+import memoryDb from '../../memoryDB/memoryDb';
 
-const Task = require('./task.model');
-const { NotFound } = require('../../utils/notfound');
-const { BadRequest } = require('../../utils/badrequest');
+import Task from './task.model';
+import ITaskProps from './task.types';
+import NotFound from '../../utils/notfound';
+import BadRequest from '../../utils/badrequest';
 
 const tableMemoryDb = 'Tasks';
 
@@ -28,7 +29,7 @@ const tableMemoryDb = 'Tasks';
  * @param {String} boardId id of a board the task belongs to
  * @returns {Promise<Array<Task>>} promise resolving to array tasks
  */
-const getAll = async (boardId) => 
+const getAll = async (boardId: string): Promise<Task[]> => 
   memoryDb.getAllEntitiesByProps(tableMemoryDb, { boardId });
 
 /**
@@ -38,7 +39,7 @@ const getAll = async (boardId) =>
  * @throws {NotFound} rejects if no task with id was found on the board
  * @returns {Promise<Task>} promise resolving to task
  */
-const getById = async (boardId, id) => {
+const getById = async (boardId: string, id: string): Promise<Task> => {
     const task = await memoryDb.getEntityByIdAndProps(tableMemoryDb, id, { boardId });
 
     if (!task) {
@@ -53,7 +54,7 @@ const getById = async (boardId, id) => {
  * @param {Task} taskInstance task instance
  * @returns {Promise<Task>} promise resolving to task instance
  */
-const create = async (task) => memoryDb.createEntity(tableMemoryDb, task);
+const create = async (task: ITaskProps): Promise<Task> => memoryDb.createEntity(tableMemoryDb, task);
 
 /**
  * Forwards set of new props to be applied to task on board
@@ -63,7 +64,11 @@ const create = async (task) => memoryDb.createEntity(tableMemoryDb, task);
  * @throws {BadRequest} rejects if no Tasks with id was found on the board
  * @returns {Promise<Task>} promise resolving to updated Task
  */
-const update = async (boardId, id, props) => {
+const update = async (
+  boardId: string,
+  id: string,
+  props: ITaskProps
+): Promise<Task> => {
   const task = await memoryDb.updateEntity(tableMemoryDb, id, props);
 
   if (!task) {
@@ -80,7 +85,7 @@ const update = async (boardId, id, props) => {
  * @throws {NotFound} rejects if no tasks with id was found on the board
  * @returns {void}
  */
-const remove = async (boardId, id) => {
+const remove = async (boardId: string, id: string): Promise<void> => {
   const task = await memoryDb.deleteEntity(tableMemoryDb, id);
 
   if (!task) {
@@ -93,7 +98,7 @@ const remove = async (boardId, id) => {
  * @param {String} boardId board id
  * @returns {void}
  */
-const removeAllOnBoard = async (boardId) => {
+const removeAllOnBoard = async (boardId: string): Promise<void> => {
   const tasks = await memoryDb.getAllEntitiesByProps(tableMemoryDb, { boardId });
 
   tasks.forEach(async (task) => {
@@ -106,10 +111,10 @@ const removeAllOnBoard = async (boardId) => {
  * @param {String} userId user id
  * @returns {void}
  */
-const removeUserBinding = async (userId) => {
+const removeUserBinding = async (userId: string): Promise<void> => {
   const tasks = await memoryDb.getAllEntities(tableMemoryDb);
 
-  tasks.forEach(async (task) => {
+  tasks.forEach(async (task: ITaskProps) => {
     if (task.userId === userId) {
       await update(task.boardId, task.id, new Task({ ...task, userId: null }));
     }

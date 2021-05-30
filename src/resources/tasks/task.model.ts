@@ -3,7 +3,8 @@
  * @module task/model
  */
 
-const uuid = require('uuid');
+ import * as uuid from 'uuid';
+ import ITaskProps from './task.types';
 
 /**
  * Task instance type
@@ -19,6 +20,20 @@ const uuid = require('uuid');
 
 /** Class Task representing a task */
 class Task {
+  id: string;
+
+  title: string;
+
+  description: string;
+
+  userId: string | null;
+
+  boardId: string | null;
+
+  columnId: string | null;
+
+  order: number;
+
   /**
    * Creates a Task instance
    * @type {Task}
@@ -34,12 +49,12 @@ class Task {
   constructor({
     id = uuid.v4(),
     title = 'Task Title',
-    description = 'Task description',
+    description = 'A default task description',
     userId = null,
     boardId = null,
     columnId = null,
     order = 0,
-  } = {}) {
+  }: ITaskProps = {}) {
     this.id = id;
     this.title = title;
     this.description = description;
@@ -54,8 +69,16 @@ class Task {
    * @param {Task} taskInstance task instance
    * @returns {Object} simple object
    */
-    static toResponse(task) {
-    const { id, title, order, description, userId, boardId, columnId } = task;
+  static toResponse(task: Task): {
+    id: string;
+    title: string;
+    description: string;
+    userId: string | null;
+    boardId: string | null;
+    columnId: string | null;
+    order: number
+  } {
+    const { id, title, description, userId, boardId, columnId, order } = task;
 
     return {
       id,
@@ -69,4 +92,4 @@ class Task {
   }
 }
 
-module.exports = Task;
+export default Task;

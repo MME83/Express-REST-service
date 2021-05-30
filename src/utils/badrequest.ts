@@ -1,4 +1,4 @@
-const { GeneralError } = require('./errors');
+import GeneralError from './errors';
 
 /**
  * Class BadRequest representing error message
@@ -9,8 +9,8 @@ class BadRequest extends GeneralError {
    * create error message
    * @param {string} message error message
    */
-    constructor(message) {
-        super();
+    constructor(message: string) {
+        super(message);
         /** @private */
         this.message = message;
     }
@@ -19,7 +19,7 @@ class BadRequest extends GeneralError {
      * Get the error code status
      * @returns {number} error code status 400 or 500
      */
-    getCode() {
+    getCode(): number {
         if (this instanceof BadRequest) {
             return 400;
         }
@@ -27,4 +27,4 @@ class BadRequest extends GeneralError {
     }
 }
 
-module.exports = { BadRequest };
+export default BadRequest;
