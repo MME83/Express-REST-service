@@ -1,5 +1,5 @@
-import express from 'express';
-import GeneralError from '../utils/errors';
+import { Request, Response, NextFunction } from 'express';
+// import GeneralError from '../utils/errors';
 import NotFound from '../utils/notfound';
 import BadRequest from '../utils/badrequest';
 
@@ -12,26 +12,20 @@ import BadRequest from '../utils/badrequest';
  * @returns {JSON} error status code and error message
  */
 const handleErrors = (
-  err: { code?: number | string; message: string}, 
-  _req: express.Request, 
-  res: express.Response,
-  next: express.NextFunction
-): void => {
-  if (err instanceof GeneralError) {
-    res.status(500);
-    res.json({ error : err.message });
-  } if (err instanceof NotFound) {
-    res.status(404);
-    res.json({ error : err.message });
-  }
-  if (err instanceof BadRequest) {
+  err: Error, 
+  _req: Request, 
+  res: Response,
+  next: NextFunction
+): void => { 
+  if (err instanceof NotFound) {
+    res.status(404).send(err.message);
+  } else if (err instanceof BadRequest) {
     res.status(400);
     res.json({ error : err.message });
+  } else {
+    res.status(500).send(err.message);
   }
   next();
-  res.status(500);
-  res.json({ error : err.message });
-
 };
 
 export default handleErrors;

@@ -1,62 +1,75 @@
+import {ReasonPhrases, StatusCodes} from 'http-status-codes';
 import express from 'express';
-import asyncHandler from 'express-async-handler';
-
-import Task from './task.model';
+import { asyncHandler } from '../../utils/asyncHandler';
+import { Task } from './task.model';
 import tasksService from './task.service';
 
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.route('/:boardId/tasks').get(
+router.route('/').get(
     asyncHandler(async (req, res) => {
       const { boardId } = req.params;
-      const tasks = await tasksService.getAll(boardId);
-    
-      res.status(200).json(tasks.map(Task.toResponse));
+      const tasks = await tasksService.getAll(String(boardId));
+      
+      if (tasks) {
+        return res.status(StatusCodes.OK).json(tasks.map(Task.toResponse)); 
+      }
+      return res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);
     })
 );
 
-router.route('/:boardId/tasks').post(
-    asyncHandler(async (req, res) => {
-      const { boardId } = req.params;
-      const { body } = req;
-      const task = await tasksService.create(boardId, body);
-
-      res.status(201).json(Task.toResponse(task));
+router.route('/').post(
+  asyncHandler(async (req, res) => {
+      const { boardId } = req.params;     
+      const task = await tasksService.create(new Task({ ...req.body, boardId }));
+      
+      if (task) {
+        return res.status(StatusCodes.CREATED).json(Task.toResponse(task));
+      }
+      return res.status(StatusCodes.CREATED).json(Task.toResponse(task));
     })
 );
 
-router.route('/:boardId/tasks/:id').get(
-    asyncHandler(async (req, res) => {
-      const { boardId, id } = req.params;
-      const task = await tasksService.getById(boardId, id);
-
-      res.status(200).json(Task.toResponse(task));
+router.route('/:id').get(
+    asyncHandler(async (req, res) => { 
+      const { id } = req.params;   
+      const task = await tasksService.getById(String(id));
+      
+      if (task) {
+        return res.status(StatusCodes.OK).json(Task.toResponse(task));
+      }
+      return res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);
     })
 );
 
-router.route('/:boardId/tasks/:id').put(
+router.route('/:id').put(
     asyncHandler(async (req, res) => {
-      const { boardId, id } = req.params;
-      const { body } = req;
+      const { id } = req.params;
+
       const updatedTask = await tasksService.update(
-        boardId,
-        id,
-        body,
+        String(id),
+        req.body
       );
-
-      res.status(200).json(Task.toResponse(updatedTask));
+      
+      if (updatedTask) {
+        return res.status(200).json(Task.toResponse(updatedTask));
+      }
+      return res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);
     })
 );
 
-router.route('/:boardId/tasks/:id').delete(
+router.route('/:id').delete(
     asyncHandler(async (req, res) => {
-      const { boardId, id } = req.params;
-
-      await tasksService.remove(boardId, id);
-
-      res.status(204).send('Task has been removed!');
+      const { id } = req.params;
+      const task = await tasksService.getById(String(id));
+      
+      if (task) {
+        await tasksService.remove(String(id));
+        return res.status(StatusCodes.NO_CONTENT).send('Task has been removed!');
+      }
+      return res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);
     })
 );
 
-module.exports = router;
+export default router;

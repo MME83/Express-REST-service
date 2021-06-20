@@ -1,10 +1,10 @@
-import GeneralError from './errors';
+// import GeneralError from './errors';
 
 /**
  * Class BadRequest representing error message
  * @extends GeneralError
  */
-class BadRequest extends GeneralError {
+class BadRequest extends Error {
    /**
    * create error message
    * @param {string} message error message

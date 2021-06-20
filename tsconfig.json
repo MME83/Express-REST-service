@@ -21,12 +21,12 @@
       "declaration": true,
       "module": "commonjs",
       "sourceMap": true,
-      "target": "ES3",
+      "target": "es2020",
     },
     "exclude": [
       "node_modules"
     ],
     "include": [
         "./src/**/*.ts"
-, "src/utils/routerErrorHandler.js"    ],
+    ],
 }

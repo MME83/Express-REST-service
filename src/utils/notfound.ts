@@ -1,18 +1,20 @@
-import GeneralError from './errors';
+// import GeneralError from './errors';
 
 /**
  * Class NotFound representing error message
  * @extends GeneralError
  */
-class NotFound extends GeneralError {
+class NotFound extends Error {
    /**
    * create error message
    * @param {string} message error message
    */
+    // readonly code: number;
+
     constructor(message: string) {
       super(message);
-      /** @private */
       this.message = message;
+     // this.code = responseCode;
     }
     
     /**
@@ -23,8 +25,8 @@ class NotFound extends GeneralError {
         if (this instanceof NotFound) {
             return 404;
         }
-        return 500;
-    }
+        return 500; 
+    } 
 }
   
 export default NotFound;

@@ -1,6 +1,7 @@
+import { /* ReasonPhrases, */ StatusCodes } from 'http-status-codes';
 import express from 'express';
-import asyncHandler from 'express-async-handler';
-import User from './user.model';
+import { asyncHandler } from '../../utils/asyncHandler';
+import { User } from './user.model';
 import usersService from './user.service';
 
 const router = express.Router();
@@ -8,49 +9,46 @@ const router = express.Router();
 router.route('/').get(
   asyncHandler(async (_req, res) => {
     const users = await usersService.getAll();
-    // map user fields to exclude secret fields like "password"
-  
-    res.status(200).json(users.map(User.toResponse));
+    
+    res.status(StatusCodes.OK).json(users.map(User.toResponse));
   })
 );
 
 router.route('/').post(
   asyncHandler(async (req, res) => {
-    const { name, login, password } = req.body;
-
-    const user = await usersService.create({ name, login, password });
-    res.status(201).json(User.toResponse(user));    
+    const user = await usersService.create(User.fromRequest(req.body));
+    
+    res.status(StatusCodes.CREATED).json(User.toResponse(user));
   })
 );
 
 router.route('/:id').get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
+    
+    const user = await usersService.getById(String(id));
 
-    const user = await usersService.getById(id);
-
-    res.status(200).json(User.toResponse(user));  
+    res.status(StatusCodes.OK).json(User.toResponse(user));
   })
 );
 
 router.route('/:id').put(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { name, login, password } = req.body;
-
-    const user = await usersService.update(id, { name, login, password });
     
-    res.status(200).json(User.toResponse(user));
+    const user = await usersService.update(String(id), req.body);
+    
+    if (user !== undefined)
+    res.status(StatusCodes.OK).json(User.toResponse(user));     
   })
 );
 
 router.route('/:id').delete(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
+      await usersService.remove(String(id));
 
-    await usersService.remove(id);
-    
-    res.status(204).send('User has been deleted');
+      res.status(StatusCodes.NO_CONTENT).send('User has been deleted');
   })
 );
 

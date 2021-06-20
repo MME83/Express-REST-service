@@ -3,87 +3,80 @@
  * @module board/repository
  */
 
-import * as memoryDb from '../../memoryDB/memoryDb';
-import IBoardProps from './board.types';
-import Board from './board.model';
+import memoryDb from '../../memoryDB/memoryDb';
 import NotFound from '../../utils/notfound';
 import BadRequest from '../../utils/badrequest';
+import { Board } from './board.model';
+import { Column } from './board.column.model'
 
-const tableMemoryDb = 'Boards';
+const boardDB: Board[] = memoryDb.Boards;
 
-/**
- * Board instance type
- * @typedef {Object} Board
- * @ignore
- * @property {String} id board id
- * @property {String} title board title
- * @property {Array<Column>} columns an array of Column instances
- */
+const getAll = async (): Promise<Board[]> => {
+  const boards = boardDB.filter((entity) => entity);
 
-/**
- * Retrieves all instances of Board class
- * @returns {Promise<Array<Board>>} promise resolving to array of all boards
- */
-const getAll = async (): Promise<Board[]> => memoryDb.getAllEntities(tableMemoryDb);
-
-/**
- * Retrieves an instance of Board by id
- * @param {String} id board id
- * @throws {NotFound} if board wasn't found
- * @returns {Promise<Board>} promise resolving to board
- */
-const getById = async (id: string): Promise<Board> => {
-    const board = await memoryDb.getEntityById(tableMemoryDb, id);
-
-    if (!board) {
-      throw new NotFound(`Board with id:${id} not found`);
-    }
-
-    return board;
+  return boards;
 }
 
-/**
- * Forwards an instance of Board to be added to database
- * @param {Board} boardInstance board instance
- * @returns {Promise<Board>} promise resolving to provided boardInstance
- */
-const create = async (board: IBoardProps): Promise<Board> => memoryDb.createEntity(tableMemoryDb, board);
-
-/**
- * Forwards set of new props to be applied to board with id
- * @param {String} id board id
- * @param {Board} props collection of key: value pairs
- * @throws {BadRequest} rejects if board wasn't found with the id
- * @returns {Promise<Board>} promise resolving to updated Board instance
- */
-const update = async (id: string, props: IBoardProps): Promise<Board> => {
-  const board = await memoryDb.updateEntity(tableMemoryDb, id, props);
-
+const getById = async (id: string): Promise<Board> => {
+  const board = boardDB.find((item) => item.id === id);   
+  
   if (!board) {
-    throw new BadRequest(`Board with id:${id} not exist`);
+    throw new NotFound(`Board with id:${id} not found`);
   }
 
   return board;
 };
 
-/**
- * Forwards id of a board to be removed to database
- * @param {Sting} id board id
- * @throws {NotFound} rejects if board was not found
- * @returns {void}
- */
-const remove = async (id: string): Promise<void> => {
-  const board = await memoryDb.deleteEntity(tableMemoryDb, id);
+const create = async (board: Board): Promise<Board> => {
+  const newBoard = boardDB.push(board);
+
+  if (!newBoard) {
+    throw new BadRequest(`Board has not created`);
+  }
+  
+  return getById(board.id);
+};
+
+const update = async (id: string, props: Partial<Board>): Promise<Board | undefined> => {
+  const board = await getById(id);
 
   if (!board) {
     throw new NotFound(`Board with id:${id} not found`);
   }
+  const columns = props.columns?.map((column) => new Column(column));
+  const dataToUpdate = columns ? { ...props, columns } : props;
+  const IndexBoard = boardDB.indexOf(board);
+
+  boardDB[IndexBoard] = ({ ...board, ...dataToUpdate});
+
+  return boardDB[IndexBoard];
+  
+  // if (board.columns.id
+  // const columns = props.columns?.map((column) => new Column(column));
+  // const dataToUpdate = columns ? { ...props, columns } : props;
+  
+  /* board.title = props.title ? props.title : board.title;
+  board.columns = props.columns ? ([ ...board.columns, ...props.columns]) : board.columns;
+
+  return board; */
+/*
+  const columns = props.columns?.map((column) => new Column(column));
+  const dataToUpdate = columns ? { ...props, columns } : props;
+  
+  board = ({ ...board, ...dataToUpdate});
+
+  return board; */
 };
 
-export default {
-  getAll,
-  getById,
-  create,
-  update,
-  remove,
+const remove = async (id: string): Promise<void> => {
+  boardDB.map((board, idx) => {
+    if (board.id === id) {
+      boardDB.splice(idx, 1);     
+      return true;
+    }
+    
+    return false;
+  })
 };
+
+export { getAll, getById, create, update, remove };
