@@ -36,6 +36,9 @@ export const logRequest = (
     res: Response,
     next: NextFunction
 ): void => {
+    if (req.body.password) {
+        delete req.body.password;
+    }
     const { query, url, body, method } = req;
     finished(res, () => {
         const { statusCode } = res;
