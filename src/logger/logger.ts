@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 import { finished } from 'stream';
 import { Request, Response, NextFunction } from 'express';
 
-const logger = createLogger({
+export const logger = createLogger({
     transports: [
         new transports.File({
             filename: `logs/info.log`,
