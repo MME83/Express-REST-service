@@ -6,7 +6,6 @@
 node_modules
 npm-debug.log
 build
-doc
 docs
 test
 out
