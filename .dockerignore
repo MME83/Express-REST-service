@@ -1,0 +1,11 @@
+.github
+.vscode
+.gitignore
+.prettierrc
+.eslintrc.json
+node_modules
+npm-debug.log
+build
+docs
+test
+out
