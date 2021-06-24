@@ -2,7 +2,7 @@ version: '3.8'
 services:
     node:
         build: .
-        image: mme83/Express-REST-service:app
+        image: mme83/express-rest-service:app
         restart: always
         ports: 
             - ${PORT}:${PORT}
@@ -21,7 +21,7 @@ services:
     
     db:
         build: ./db/
-        image: mme83/Express-REST-service:db
+        image: mme83/express-rest-service:db
         restart: always
         ports: 
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
