@@ -9,7 +9,7 @@ services:
         depends_on:
             - db
         volumes:
-            - ./log:/usr/app/log
+            - ./logs:/usr/app/logs
             - ./src:/usr/app/src
         networks: 
             - app-bridge
