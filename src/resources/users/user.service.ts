@@ -1,19 +1,17 @@
-import usersRepo from './user.memory.repository';
-import { User } from './user.model';
-import taskService from '../tasks/task.service';
+import { DeleteResult } from 'typeorm';
+import { usersRepository } from './user.repository';
+import { IUser } from '../../entities/user';
+// import taskService from '../tasks/task.service';
 
-const getAll = (): Promise<User[]> => usersRepo.getAll();
+const getAll = (): Promise<IUser[]> => usersRepository.getAll();
 
-const getById = (id: string): Promise<User> => usersRepo.getById(id);
+const createUser = (user: Partial<IUser>): Promise<IUser | undefined> => usersRepository.createUser(user);
 
-const create = (user: User): Promise<User> => usersRepo.create(user);
+const getUserById = (id: string): Promise<IUser | undefined> => usersRepository.getUserById(id);
 
-const update = (id: string, entity: Partial<User>): Promise<User | undefined> =>
-    usersRepo.update(id, entity);
+const updateUser = (id: string, updatedUser: Partial<IUser>): Promise<IUser | undefined> => 
+  usersRepository.updateUser(id, updatedUser);
 
-const remove = (id: string): Promise<void> => {
-    taskService.removeUserBinding(id);
-    return usersRepo.remove(id);
-};
+const deleteUserById = (id: string): Promise<DeleteResult> => usersRepository.deleteUserById(id); 
 
-export default { getAll, getById, create, update, remove };
+export default { getAll, createUser, getUserById, updateUser, deleteUserById };
