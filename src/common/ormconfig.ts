@@ -1,7 +1,7 @@
 /* eslint-disable dot-notation */
 import { ConnectionOptions } from 'typeorm';
 
-export const options: ConnectionOptions = {
+export const configTypeorm: ConnectionOptions = {
     type: 'postgres',
     host: process.env['DB_HOST'],
     port: Number(process.env['POSTGRES_PORT']),
