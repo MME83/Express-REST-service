@@ -1,6 +1,9 @@
 import { DeleteResult } from 'typeorm';
 import { usersRepository } from './user.repository';
+import tasksService from '../tasks/task.service';
 import { IUser } from '../../entities/user';
+// import taskRepository from '../tasks/task.repository';
+
 // import taskService from '../tasks/task.service';
 
 const getAll = (): Promise<IUser[]> => usersRepository.getAll();
@@ -12,6 +15,8 @@ const getUserById = (id: string): Promise<IUser | undefined> => usersRepository.
 const updateUser = (id: string, updatedUser: Partial<IUser>): Promise<IUser | undefined> => 
   usersRepository.updateUser(id, updatedUser);
 
-const deleteUserById = (id: string): Promise<DeleteResult> => usersRepository.deleteUserById(id); 
-
+const deleteUserById = async (id: string): Promise<DeleteResult> => {
+  await tasksService.unsignUserFromTask(id);
+  return usersRepository.deleteUserById(id);
+}
 export default { getAll, createUser, getUserById, updateUser, deleteUserById };

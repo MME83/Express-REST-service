@@ -15,8 +15,8 @@ const create = (props: Board): Promise<Board> => boardsRepo.create(props);
 const update = (id: string, props: Partial<Board>): Promise<Board | undefined> => 
     boardsRepo.update(id, props);
 
-const remove = (id: string): Promise<void> => {
-    tasksService.removeAllOnBoard(id);
+const remove = async (id: string): Promise<void> => {
+    await tasksService.delTaskByBoardId(id);
     return boardsRepo.remove(id);
     
 };
