@@ -2,29 +2,30 @@
  * Board service
  * @module board/service
  */
-import { Board } from './board.model';
-import * as boardsRepo from './board.memory.repository';
+import { DeleteResult } from 'typeorm';
+import { Board } from '../../entities/board';
+import { boardsRepository } from './board.repository';
 import tasksService from '../tasks/task.service';
 
-const getAll = (): Promise<Array<Board>> => boardsRepo.getAll();
+const getAll = (): Promise<Array<Board>> => boardsRepository.getAll();
 
-const getById = (id: string): Promise<Board> => boardsRepo.getById(id);
+const getBoardById = (id: string): Promise<Board | undefined> => boardsRepository.getBoardById(id);
 
-const create = (props: Board): Promise<Board> => boardsRepo.create(props);
+const createBoard = (props: Board): Promise<Board | undefined> => boardsRepository.createBoard(props);
 
-const update = (id: string, props: Partial<Board>): Promise<Board | undefined> => 
-    boardsRepo.update(id, props);
+const updateBoard = (id: string, props: Partial<Board>): Promise<Board | undefined> => 
+boardsRepository.updateBoard(id, props);
 
-const remove = async (id: string): Promise<void> => {
+const deleteBoardById = async (id: string): Promise<DeleteResult> => {
     await tasksService.delTaskByBoardId(id);
-    return boardsRepo.remove(id);
+    return boardsRepository.deleteBoardById(id);
     
 };
 
-export {
+export default {
     getAll,
-    getById,
-    create,
-    update,
-    remove,
+    createBoard,
+    getBoardById,
+    updateBoard,
+    deleteBoardById,
 };
