@@ -3,59 +3,59 @@
  * Task repository
  * @module task/repository
  */
-
-// import memoryDb from '../../memoryDB/memoryDb';
-// import { Task } from './task.model';
-// import NotFound from '../../utils/notfound';
-// import BadRequest from '../../utils/badrequest';
-import { EntityRepository, Repository, getConnection } from 'typeorm';
+import { getConnection, getRepository } from 'typeorm';
 import { ITask, Task } from '../../entities/task';
 
-@EntityRepository(Task)
-class TasksRepository extends Repository<Task> {
-  getAll(boardId: string) {
-    return this.createQueryBuilder('task')
+const getAll = async (boardId: string): Promise<ITask[]> => getRepository(Task)
+    .createQueryBuilder('task')
     .where('task.boardId = :boardId', { boardId })
     .getMany();
-  }
 
-  async createTask(boardId: string, task: Partial<ITask>) {
-    const { generatedMaps } = await this.createQueryBuilder()
-      .insert()
-      .into(Task)
-      .values([{ ...task, boardId }])
-      .execute();
+const getTaskById = async (boardId: string, id: string ): Promise<ITask | undefined> =>
+  getRepository(Task).findOne({ boardId, id });
 
-    return this.getTaskById(generatedMaps?.[0]?.['boardId'], generatedMaps?.[0]?.['id']);
-  }
+const createTask = async (boardId: string, task: Omit<ITask, 'id'>): Promise<ITask | undefined> => {
+  const { generatedMaps } = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Task)
+    .values([{ ...task, boardId }])
+    .execute();
+  
+  return getTaskById(boardId, generatedMaps?.[0]?.['id']);
+};
 
-  getTaskById(boardId: string, taskId: string ) {
-    return this.createQueryBuilder('task')
-      .where('task.boardId = :boardId', { boardId })
-      .andWhere('task.id = :taskId', { taskId })
-      .getOne();
-  }
+const updateTask = async (boardId: string, taskId: string, updatedTask: Partial<ITask>): Promise<ITask | undefined> => {
+  await getConnection()
+    .createQueryBuilder()
+    .update(Task)
+    .set(updatedTask)
+    .where('boardId = :boardId', { boardId })
+    .andWhere('id = :taskId', { taskId })
+    .execute();
 
-  async updateTask(boardId: string, taskId: string, updatedTask: Partial<ITask>) {
-    await this.createQueryBuilder()
-      .update(Task)
-      .set(updatedTask)
-      .where('boardId = :boardId', { boardId })
-      .andWhere('id = :taskId', { taskId })
-      .execute();
+  return getTaskById(boardId, taskId);
+};
 
-    return this.getTaskById(boardId, taskId);
-  }
+const deleteTaskById = async (boardId: string, taskId: string): Promise<void> => {
+  await getConnection()
+    .createQueryBuilder()
+    .delete()
+    .from(Task)
+    .where('boardId = :boardId', { boardId })
+    .andWhere('id = :taskId', { taskId })
+    .execute();
+};
 
-  deleteTaskById(boardId: string, taskId: string) {
-    return this.createQueryBuilder()
-      .delete()
-      .from(Task)
-      .where('boardId = :boardId', { boardId })
-      .andWhere('id = :taskId', { taskId })
-      .execute();
-  }
+export default {
+  getAll,
+  createTask,
+  getTaskById,
+  updateTask,
+  deleteTaskById,
+}
 
+  /*
   async unsignUserFromTask(userId: string) {
     return this.createQueryBuilder()
       .update(Task)
@@ -71,6 +71,4 @@ class TasksRepository extends Repository<Task> {
       .where('boardId = :boardId', { boardId })
       .execute()
   }
-}
-
-export const tasksRepository = getConnection().getCustomRepository(TasksRepository);
+*/

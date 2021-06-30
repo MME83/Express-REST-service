@@ -3,68 +3,68 @@
  * @module board/repository
  */
 
-import { EntityRepository, Repository, getConnection } from 'typeorm'; 
+import { getConnection, getRepository } from 'typeorm'; 
 import { Board, IBoard } from '../../entities/board';
-import { ColumnEntity } from '../../entities/column';
+// import { ColumnEntity } from '../../entities/column';
+import NotFound from '../../utils/notfound';
 
 
-@EntityRepository(Board)
-class BoardsRepository extends Repository<Board> {
-  getAll() {
-    return this.createQueryBuilder('board')
-      .leftJoinAndSelect('board.columns', 'columns')
-      .getMany();
+const getAll = async (): Promise<IBoard[]> => getRepository(Board).find();
+
+const getBoardById = async (boardId: string): Promise<IBoard> => {
+  const board = await getRepository(Board).findOne({ id: boardId });
+  
+  if (!board) {
+    throw new NotFound(`Board with id:${boardId} has not found`);
   }
+  
+  return board;
+};
 
-  async createBoard({ title, columns }: Partial<IBoard>) {
-    const board = new Board();
+const createBoard = async (props: Omit<Board, 'id'>): Promise<IBoard> => {
+  /* const { identifiers } = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(Board)
+    .values([props])
+    .execute();
+    
+  return getBoardById(identifiers[0]?.['id']); */
+  
+  const board = Board.create(props);
+  const res = await Board.save(board);
+  return res;
+};
 
-    const connnectionManager = getConnection().manager;
+const updateBoard = async (id: string, props: Partial<Board>): Promise<IBoard> => {
+ 
+ /* await getConnection().createQueryBuilder()
+    .update(Board)
+    .set(props)
+    .where('id = :id', { id })
+    .execute();
+  
+  return getBoardById(id); */
 
-    if (board) {
-      board.title = title || board.title || 'Board_title';
+  const result = await getBoardById(id);
 
-      await connnectionManager.save(board);
+  // if (!result) throw new NotFound(`Board with id:${id} has not found`); 
 
-      if (columns) {
-        await Promise.all(columns.map(async ({ id: columnId, title: columnTitle, order }) => {
-          const column = new ColumnEntity();
-          column.id = columnId;
-          column.title = columnTitle;
-          column.order = order;
-          column.board = board;
-          await connnectionManager.save(column);
-        }))
-      }
-    }
+  return result && getRepository(Board).save({ ...result, ...props });
+};
 
-    return this.getBoardById(board.id);
-  }
+const deleteBoardById = async (id: string): Promise<void> => {
+  await getConnection().createQueryBuilder()
+    .delete()
+    .from(Board)
+    .where('id = :id', { id })
+    .execute();
+};
 
-  async getBoardById(id: string) {
-    return this.createQueryBuilder('board')
-      .leftJoinAndSelect('board.columns', 'columns')
-      .where('board.id = :id', { id })
-      .getOne();
-  }
-
-  async updateBoard(id :string, { title, columns }: Partial<IBoard>) {
-    await this.createQueryBuilder()
-      .update(Board)
-      .set({ title, columns })
-      .where('boardId = :boardId', { id })
-      .execute();
-
-    return this.getBoardById(id);
-  }
-
-  async deleteBoardById(id: string) {
-    return this.createQueryBuilder()
-      .delete()
-      .from(Board)
-      .where('id = :id', { id })
-      .execute();
-  }
+export default {
+  getAll,
+  createBoard,
+  getBoardById,
+  updateBoard,
+  deleteBoardById
 }
-
-export const boardsRepository = getConnection().getCustomRepository(BoardsRepository);

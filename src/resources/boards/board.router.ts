@@ -27,8 +27,8 @@ router.route('/').post(
 
 router.route('/:id').get(
     asyncHandler(async (req, res) => {
-      const { boardId } = req.params;
-      const board = await boardsService.getBoardById(boardId as string);
+      const { id } = req.params;
+      const board = await boardsService.getBoardById(id as string);
       
       if (!board) {
         return res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);
@@ -40,27 +40,27 @@ router.route('/:id').get(
 
 router.route('/:id').put(
     asyncHandler(async (req, res) => {
-      const { boardId } = req.params;      
-      const board = await boardsService.updateBoard(String(boardId), req.body);
+      const { id } = req.params;      
+      const board = await boardsService.updateBoard(String(id), req.body);
       
-      if (!board) {
+     /* if (!board) {
         return res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);        
-      }
+      } */
       return res.status(StatusCodes.OK).json(board);
     })
 );
 
 router.route('/:id').delete(
   asyncHandler(async (req, res) => {
-      const { boardId } = req.params;
-      const board = await boardsService.getBoardById(String(boardId));
+      const { id } = req.params;
+      const board = await boardsService.getBoardById(String(id));
      
       if (!board) {
         res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);
       }
      
-      await boardsService.deleteBoardById(String(boardId));
-      res.status(StatusCodes.NO_CONTENT).send(`Board with id:${boardId} has been removed`);
+      await boardsService.deleteBoardById(String(id));
+      res.status(StatusCodes.NO_CONTENT).send(`Board with id:${id} has been removed`);
       // res.status(204).send(`Board with id:${id} has been removed`);
     })
 );

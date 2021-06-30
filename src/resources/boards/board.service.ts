@@ -2,25 +2,23 @@
  * Board service
  * @module board/service
  */
-import { DeleteResult } from 'typeorm';
-import { Board } from '../../entities/board';
-import { boardsRepository } from './board.repository';
-import tasksService from '../tasks/task.service';
+import boardsRepository from './board.repository';
+import { Board, IBoard } from '../../entities/board';
 
-const getAll = (): Promise<Array<Board>> => boardsRepository.getAll();
+// import tasksService from '../tasks/task.service';
 
-const getBoardById = (id: string): Promise<Board | undefined> => boardsRepository.getBoardById(id);
+const getAll = (): Promise<Array<IBoard>> => boardsRepository.getAll();
 
-const createBoard = (props: Board): Promise<Board | undefined> => boardsRepository.createBoard(props);
+const getBoardById = (id: string): Promise<IBoard | undefined> => boardsRepository.getBoardById(id);
 
-const updateBoard = (id: string, props: Partial<Board>): Promise<Board | undefined> => 
+const createBoard = (props: Omit<Board, 'id'>): Promise<IBoard | undefined> => boardsRepository.createBoard(props);
+
+const updateBoard = (id: string, props: Partial<Board>): Promise<IBoard | undefined> => 
 boardsRepository.updateBoard(id, props);
 
-const deleteBoardById = async (id: string): Promise<DeleteResult> => {
-    await tasksService.delTaskByBoardId(id);
-    return boardsRepository.deleteBoardById(id);
-    
-};
+const deleteBoardById = async (id: string): Promise<void> => 
+   // await tasksService.delTaskByBoardId(id);
+     boardsRepository.deleteBoardById(id);
 
 export default {
     getAll,

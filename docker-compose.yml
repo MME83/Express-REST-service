@@ -1,6 +1,7 @@
 version: '3.8'
 services:
     node:
+        container_name: app
         build: .
         image: mme83/express-rest-service:app
         restart: always
@@ -15,30 +16,27 @@ services:
             - app-bridge
         environment: 
             PORT: ${PORT}
+            DB_HOST: ${DB_HOST_DOCKER}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_PORT: ${POSTGRES_PORT}
     
     db:
+        container_name: db
         build: ./db/
-        image: mme83/express-rest-service:db
+        image: postgres:13.3-alpine
         restart: always
         ports: 
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
         volumes: 
-            - ./db:/var/lib/postgresql/data
+            - ./db/pgdata:${DOCKER_DB_DATA}
         networks: 
             - app-bridge
         environment: 
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-            POSTGRES_PORT: ${POSTGRES_PORT}
             POSTGRES_DB: ${POSTGRES_DB}
-            PGDATA: ${PGDATA}
 
 networks: 
     app-bridge:
         driver: bridge
-
-volumes: 
-    db-data:

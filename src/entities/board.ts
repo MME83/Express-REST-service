@@ -1,14 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { ColumnEntity, IColumn } from './column';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity } from "typeorm";
+import { ColumnEntity } from './column';
+import { Task } from "./task";
 
 export interface IBoard {
     id: string;
     title: string;
-    columns: IColumn[];
+    columns: ColumnEntity[];
 }
 
 @Entity({ name: 'boards' })
-export class Board implements IBoard {
+export class Board extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
@@ -16,9 +17,14 @@ export class Board implements IBoard {
     title!: string;
 
     @OneToMany(() => ColumnEntity, column => column.board, {
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        cascade: true
+      // nullable: true,
+       cascade: true,
+       eager: true,
     })
     columns!: ColumnEntity[];
+
+    @OneToMany(() => Task, task => task.boardId, { 
+        cascade: true
+    })
+    tasks!: Task[];
 }

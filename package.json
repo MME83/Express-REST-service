@@ -15,9 +15,10 @@
     "dev": "nodemon --exec \"ts-node src/server.ts\" --watch src/**/*.ts --ignore node_modules/",
     "test": "cross-env DEBUG=rs:* jest --testMatch \"<rootDir>/test/e2e/test/*.test.js\" --noStackTrace --runInBand",
     "test:auth": "cross-env DEBUG=rs:* TEST_MODE=auth jest --noStackTrace",
-    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js --config=src/common/ormconfig.ts",
-    "migration:generate": "npm run typeorm migration:generate -- -n MigrationFile",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js --config src/common/ormconfig.ts",
+    "migration:g": "npm run typeorm migration:generate -- -n dbMigratin",
     "migration:run": "npm run typeorm -- migration:run",
+    "migration:rev": "npm run typeorm -- migration:revert",
     "doc": "jsdoc --configure jsdoc.json src/server.js"
   },
   "keywords": [
@@ -55,6 +56,7 @@
     "express": "4.17.1",
     "http-status-codes": "^2.1.4",
     "pg": "^8.6.0",
+    "reflect-metadata": "^0.1.13",
     "swagger-ui-express": "4.1.6",
     "typeorm": "^0.2.34",
     "uuid": "8.3.2",

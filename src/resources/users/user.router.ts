@@ -4,6 +4,7 @@ import usersService from './user.service';
 import { asyncHandler } from '../../utils/asyncHandler';
 import NotFound from '../../utils/notfound';
 import BadRequest from '../../utils/badrequest';
+import { User } from '../../entities/user'
 
 const router = express.Router();
 
@@ -27,7 +28,7 @@ router.route('/').post(
       throw new BadRequest(`User has not created`);
     }
 
-    res.status(StatusCodes.CREATED).json(user);
+    res.status(StatusCodes.CREATED).json(User.toResponse(user));
   })
 );
 
@@ -36,10 +37,6 @@ router.route('/:id').get(
     const { id } = req.params;
     
     const user = await usersService.getUserById(String(id));
-    
-    if (!user) {
-      throw new NotFound(`User with id:${id} not found`);
-    }
 
     res.status(StatusCodes.OK).json(user);
   })

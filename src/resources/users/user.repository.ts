@@ -1,48 +1,55 @@
-/* eslint-disable dot-notation */
-import { EntityRepository, Repository, getConnection } from 'typeorm';
-// import NotFound from '../../utils/notfound';
+import { getRepository, getConnection } from 'typeorm';
+import NotFound from '../../utils/notfound';
 // import BadRequest from '../../utils/badrequest';
 import { IUser, User } from '../../entities/user';
 
-@EntityRepository(User)
-class UsersRepository extends Repository<User> {
-  getAll() {
-    return this.createQueryBuilder().getMany();
+const getAll = async (): Promise<IUser[]> => getRepository(User).find();
+
+const getUserById = async (id: string): Promise<IUser> => {
+  const user = await getRepository(User).findOne(id);
+
+  if (!user) {
+    throw new NotFound(`User with id:${id} has not found`);
   }
 
-  async createUser(user: Partial<IUser>) {
-    const { identifiers } = await this.createQueryBuilder()
-      .insert()
-      .into(User)
-      .values([user])
-      .execute();
+  return user;
+};
+
+const createUser = async (user: Omit<IUser, 'id'>): Promise<IUser> => {
+  const { identifiers } = await getConnection()
+    .createQueryBuilder()
+    .insert()
+    .into(User)
+    .values([user])
+    .execute();
     
-    return this.getUserById(identifiers[0]?.['id']);
-  }
+  return getUserById(identifiers[0]?.['id']);
+};
 
-  getUserById(id: string) {
-    return this.createQueryBuilder('user')
-      .where('user.id = :id', { id })
-      .getOne();
-  }
+const updateUser = async (id: string, updatedUser: Partial<IUser>): Promise<IUser> => {
+  await getConnection()
+    .createQueryBuilder()
+    .update(User)
+    .set(updatedUser)
+    .where('id = :id', { id })
+    .execute();
+  
+  return getUserById(id);
+};
 
-  async updateUser(id: string, updatedUser: Partial<IUser>) {
-    await this.createQueryBuilder()
-      .update(User)
-      .set(updatedUser)
-      .where('id = :id', { id })
-      .execute();
-    
-      return this.getUserById(id);
-  }
+const deleteUserById = async (id: string): Promise<void> => { 
+  await getConnection()
+    .createQueryBuilder()
+    .delete()
+    .from(User)
+    .where('id = :id', { id })
+    .execute();
+};
 
-  deleteUserById(id: string) {
-    return this.createQueryBuilder()
-      .delete()
-      .from(User)
-      .where('id = :id', { id })
-      .execute();
-  }
+export default {
+  getAll,
+  createUser,
+  getUserById,
+  updateUser,
+  deleteUserById,
 }
-
-export const usersRepository = getConnection().getCustomRepository(UsersRepository);
