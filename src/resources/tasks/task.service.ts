@@ -16,16 +16,10 @@ const updateTask = (boardId: string, taskId: string, updatedTask: Partial<ITask>
 const deleteTaskById = (boardId: string, taskId: string): Promise<void> => 
   tasksRepository.deleteTaskById(boardId, taskId);
 
-// const unsignUserFromTask = (userId: string): Promise<UpdateResult> => tasksRepository.unsignUserFromTask(userId);
-
-// const delTaskByBoardId = (boardId: string): Promise<DeleteResult> => tasksRepository.delTaskByBoardId(boardId);
-
 export default {
     getAll,
     createTask,
     getTaskById,
     updateTask,
     deleteTaskById,
-    // unsignUserFromTask,
-    // delTaskByBoardId
 };

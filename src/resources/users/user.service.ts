@@ -1,8 +1,5 @@
 import usersRepository from './user.repository';
-// import tasksService from '../tasks/task.service';
 import { IUser } from '../../entities/user';
-// import taskRepository from '../tasks/task.repository';
-// import taskService from '../tasks/task.service';
 
 const getAll = (): Promise<IUser[]> => usersRepository.getAll();
 
@@ -14,7 +11,6 @@ const updateUser = (id: string, updatedUser: Partial<IUser>): Promise<IUser | un
   usersRepository.updateUser(id, updatedUser);
 
 const deleteUserById = async (id: string): Promise<void> => 
-  // await tasksService.unsignUserFromTask(id);
    usersRepository.deleteUserById(id);
 
 export default { getAll, createUser, getUserById, updateUser, deleteUserById };

@@ -22,14 +22,14 @@ const getBoardById = async (boardId: string): Promise<IBoard> => {
 };
 
 const createBoard = async (props: Omit<Board, 'id'>): Promise<IBoard> => {
-  /* const { identifiers } = await getConnection()
+  
+ /*  const { identifiers } = await getConnection()
     .createQueryBuilder()
     .insert()
     .into(Board)
-    .values([props])
+    .values([{ ...props }])
     .execute();
-    
-  return getBoardById(identifiers[0]?.['id']); */
+  return getBoardById(identifiers?.[0]?.['id']);  */
   
   const board = Board.create(props);
   const res = await Board.save(board);
@@ -47,8 +47,6 @@ const updateBoard = async (id: string, props: Partial<Board>): Promise<IBoard> =
   return getBoardById(id); */
 
   const result = await getBoardById(id);
-
-  // if (!result) throw new NotFound(`Board with id:${id} has not found`); 
 
   return result && getRepository(Board).save({ ...result, ...props });
 };

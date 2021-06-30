@@ -1,6 +1,5 @@
 import { getRepository, getConnection } from 'typeorm';
 import NotFound from '../../utils/notfound';
-// import BadRequest from '../../utils/badrequest';
 import { IUser, User } from '../../entities/user';
 
 const getAll = async (): Promise<IUser[]> => getRepository(User).find();

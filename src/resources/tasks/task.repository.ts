@@ -54,21 +54,3 @@ export default {
   updateTask,
   deleteTaskById,
 }
-
-  /*
-  async unsignUserFromTask(userId: string) {
-    return this.createQueryBuilder()
-      .update(Task)
-      .set({ userId: null })
-      .where('userId = :userId', { userId })
-      .execute();
-  }
-
-  delTaskByBoardId(boardId: string) {
-    return this.createQueryBuilder()
-      .delete()
-      .from(Task)
-      .where('boardId = :boardId', { boardId })
-      .execute()
-  }
-*/
