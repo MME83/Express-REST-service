@@ -3,3 +3,4 @@ out
 build
 logs
 db/pgdata
+migrations/
