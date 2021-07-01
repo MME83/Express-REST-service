@@ -3,11 +3,9 @@
  * @module board/repository
  */
 
-import { getConnection, getRepository } from 'typeorm'; 
+import { getRepository } from 'typeorm'; 
 import { Board, IBoard } from '../../entities/board';
-// import { ColumnEntity } from '../../entities/column';
 import NotFound from '../../utils/notfound';
-
 
 const getAll = async (): Promise<IBoard[]> => getRepository(Board).find();
 
@@ -31,8 +29,8 @@ const createBoard = async (props: Omit<Board, 'id'>): Promise<IBoard> => {
     .execute();
   return getBoardById(identifiers?.[0]?.['id']);  */
   
-  const board = Board.create(props);
-  const res = await Board.save(board);
+  const board = getRepository(Board).create(props);
+  const res = await getRepository(Board).save(board);
   return res;
 };
 
@@ -52,7 +50,7 @@ const updateBoard = async (id: string, props: Partial<Board>): Promise<IBoard> =
 };
 
 const deleteBoardById = async (id: string): Promise<void> => {
-  await getConnection().createQueryBuilder()
+  await getRepository(Board).createQueryBuilder()
     .delete()
     .from(Board)
     .where('id = :id', { id })

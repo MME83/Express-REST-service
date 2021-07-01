@@ -1,4 +1,4 @@
-import { getRepository, getConnection } from 'typeorm';
+import { getRepository } from 'typeorm';
 import NotFound from '../../utils/notfound';
 import { IUser, User } from '../../entities/user';
 
@@ -15,7 +15,7 @@ const getUserById = async (id: string): Promise<IUser> => {
 };
 
 const createUser = async (user: Omit<IUser, 'id'>): Promise<IUser> => {
-  const { identifiers } = await getConnection()
+  const { identifiers } = await getRepository(User)
     .createQueryBuilder()
     .insert()
     .into(User)
@@ -26,7 +26,7 @@ const createUser = async (user: Omit<IUser, 'id'>): Promise<IUser> => {
 };
 
 const updateUser = async (id: string, updatedUser: Partial<IUser>): Promise<IUser> => {
-  await getConnection()
+  await getRepository(User)
     .createQueryBuilder()
     .update(User)
     .set(updatedUser)
@@ -37,7 +37,7 @@ const updateUser = async (id: string, updatedUser: Partial<IUser>): Promise<IUse
 };
 
 const deleteUserById = async (id: string): Promise<void> => { 
-  await getConnection()
+  await getRepository(User)
     .createQueryBuilder()
     .delete()
     .from(User)

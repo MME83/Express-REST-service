@@ -3,7 +3,7 @@
  * Task repository
  * @module task/repository
  */
-import { getConnection, getRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import { ITask, Task } from '../../entities/task';
 
 const getAll = async (boardId: string): Promise<ITask[]> => getRepository(Task)
@@ -15,7 +15,7 @@ const getTaskById = async (boardId: string, id: string ): Promise<ITask | undefi
   getRepository(Task).findOne({ boardId, id });
 
 const createTask = async (boardId: string, task: Omit<ITask, 'id'>): Promise<ITask | undefined> => {
-  const { generatedMaps } = await getConnection()
+  const { generatedMaps } = await getRepository(Task)
     .createQueryBuilder()
     .insert()
     .into(Task)
@@ -26,7 +26,7 @@ const createTask = async (boardId: string, task: Omit<ITask, 'id'>): Promise<ITa
 };
 
 const updateTask = async (boardId: string, taskId: string, updatedTask: Partial<ITask>): Promise<ITask | undefined> => {
-  await getConnection()
+  await getRepository(Task)
     .createQueryBuilder()
     .update(Task)
     .set(updatedTask)
@@ -38,7 +38,7 @@ const updateTask = async (boardId: string, taskId: string, updatedTask: Partial<
 };
 
 const deleteTaskById = async (boardId: string, taskId: string): Promise<void> => {
-  await getConnection()
+  await getRepository(Task)
     .createQueryBuilder()
     .delete()
     .from(Task)

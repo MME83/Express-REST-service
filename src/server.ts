@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { /* Connection, */ createConnection } from 'typeorm';
 import config from './common/config';
 import configTypeorm from './common/ormconfig';

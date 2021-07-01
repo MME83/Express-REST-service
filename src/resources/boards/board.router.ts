@@ -43,9 +43,6 @@ router.route('/:id').put(
       const { id } = req.params;      
       const board = await boardsService.updateBoard(String(id), req.body);
       
-     /* if (!board) {
-        return res.status(StatusCodes.NOT_FOUND).send(ReasonPhrases.NOT_FOUND);        
-      } */
       return res.status(StatusCodes.OK).json(board);
     })
 );
@@ -61,7 +58,6 @@ router.route('/:id').delete(
      
       await boardsService.deleteBoardById(String(id));
       res.status(StatusCodes.NO_CONTENT).send(`Board with id:${id} has been removed`);
-      // res.status(204).send(`Board with id:${id} has been removed`);
     })
 );
 

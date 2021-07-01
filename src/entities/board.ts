@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { ColumnEntity } from './column';
 import { Task } from "./task";
 
@@ -9,7 +9,7 @@ export interface IBoard {
 }
 
 @Entity({ name: 'boards' })
-export class Board extends BaseEntity {
+export class Board {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
@@ -17,7 +17,6 @@ export class Board extends BaseEntity {
     title!: string;
 
     @OneToMany(() => ColumnEntity, column => column.board, {
-      // nullable: true,
        cascade: true,
        eager: true,
     })

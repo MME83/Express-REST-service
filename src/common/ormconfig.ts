@@ -17,7 +17,7 @@ const configTypeorm: ConnectionOptions = {
     database: process.env['POSTGRES_DB'],
     logging: process.env['DB_LOGGING'] === 'true',
     synchronize: process.env['DB_SYNC'] === 'true',
-    entities: ['src/entities/**/*.ts'],
+    entities: ['src/entities/*.ts'],
     migrations: ['src/migrations/*.ts'],
     cli: {
         entitiesDir: 'src/entities',
