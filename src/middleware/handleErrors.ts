@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-// import GeneralError from '../utils/errors';
 import NotFound from '../utils/notfound';
 import BadRequest from '../utils/badrequest';
+import { logErrors } from '../logger/logger';
+
 
 /**
  * Return known errors, forwards other errors with next()
@@ -13,10 +14,11 @@ import BadRequest from '../utils/badrequest';
  */
 const handleErrors = (
   err: Error, 
-  _req: Request, 
+  req: Request, 
   res: Response,
   next: NextFunction
 ): void => { 
+  logErrors(err, req, res, next);
   if (err instanceof NotFound) {
     res.status(404).send(err.message);
   } else if (err instanceof BadRequest) {

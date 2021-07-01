@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+    node:
+        container_name: app
+        build: .
+        image: mme83/express-rest-service:app
+        restart: always
+        env_file: 
+            .env
+        ports: 
+            - ${PORT}:${PORT}
+        depends_on:
+            - db
+        volumes:
+            - ./logs:/usr/app/logs
+            - ./src:/usr/app/src
+        networks: 
+            - app-bridge
+        environment: 
+            PORT: ${PORT}
+            DB_HOST: ${DB_HOST_DOCKER}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_PORT: ${POSTGRES_PORT}
+    
+    db:
+        container_name: db
+        build: ./db/
+        image: postgres:13.3-alpine
+        restart: always
+        env_file:
+            - .env
+        ports: 
+            - ${POSTGRES_PORT}:${POSTGRES_PORT}
+        volumes: 
+            - ${DB_PATH}:${PG_DATA}
+        networks: 
+            - app-bridge
+        environment: 
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+
+networks: 
+    app-bridge:
+        driver: bridge
