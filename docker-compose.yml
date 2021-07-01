@@ -5,6 +5,8 @@ services:
         build: .
         image: mme83/express-rest-service:app
         restart: always
+        env_file: 
+            .env
         ports: 
             - ${PORT}:${PORT}
         depends_on:
@@ -26,10 +28,12 @@ services:
         build: ./db/
         image: postgres:13.3-alpine
         restart: always
+        env_file:
+            - .env
         ports: 
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
         volumes: 
-            - ./db/pgdata:${DOCKER_DB_DATA}
+            - ${DB_PATH}:${PG_DATA}
         networks: 
             - app-bridge
         environment: 
