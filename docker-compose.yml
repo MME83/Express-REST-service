@@ -3,7 +3,7 @@ services:
     node:
         container_name: app
         build: .
-        image: mme83/express-rest-service:app
+        image: mme83/express-rest-service-auth-jwt:app
         restart: always
         env_file: 
             .env
