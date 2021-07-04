@@ -1,7 +1,5 @@
 import 'reflect-metadata';
-// import { createConnection } from 'typeorm';
 import config from './common/config';
-// import configTypeorm from './common/ormconfig';
 import app from './app';
 import { logger } from './logger/logger';
 import { dbCreateConnection } from './common/dbCreateCOnnection';
